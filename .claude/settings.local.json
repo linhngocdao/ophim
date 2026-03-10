@@ -7,7 +7,9 @@
       "Read(//private/tmp/**)",
       "Bash(npx create-next-app@latest ophim-temp --typescript --tailwind --app --src-dir --import-alias \"@/*\" --no-git --yes)",
       "Bash(npm install:*)",
-      "Bash(npx shadcn@latest init -d 2>&1)"
+      "Bash(npx shadcn@latest init -d 2>&1)",
+      "Bash(npx shadcn@latest add button badge card input skeleton separator avatar scroll-area dialog sheet navigation-menu dropdown-menu select tooltip popover --overwrite 2>&1)",
+      "Bash(/Users/daongoclinh/Workspace/project/ophim/node_modules/.bin/next --version 2>&1)"
     ]
   }
 }
