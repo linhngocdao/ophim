@@ -93,7 +93,7 @@ export function WelcomeModal() {
               <Film className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold">
-              Chào mừng đến <span className="text-[#f31260]">Ophim</span>!
+              Chào mừng đến <span className="text-[#f31260]">Nghiền Phim</span>!
             </h2>
             <p className="text-muted-foreground text-sm mt-2 leading-relaxed">
               Kho phim online khổng lồ, miễn phí 100%, cập nhật nhanh nhất Việt Nam.

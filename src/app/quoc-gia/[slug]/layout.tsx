@@ -10,14 +10,14 @@ export async function generateMetadata({
   const title = slugToTitle(slug)
 
   return {
-    title: `Phim ${title} - Xem Online HD | Ophim`,
-    description: `Xem phim ${title} online miễn phí tại Ophim. Cập nhật phim ${title} mới nhất, chất lượng HD vietsub, thuyết minh.`,
+    title: `Phim ${title} - Xem Online HD | Nghiền Phim`,
+    description: `Xem phim ${title} online miễn phí tại Nghiền Phim. Cập nhật phim ${title} mới nhất, chất lượng HD vietsub, thuyết minh.`,
     keywords: [`phim ${title}`, `xem phim ${title}`, 'phim nước ngoài', title.toLowerCase()],
     openGraph: {
-      title: `Phim ${title} | Ophim`,
-      description: `Tổng hợp phim ${title} chất lượng HD tại Ophim`,
+      title: `Phim ${title} | Nghiền Phim`,
+      description: `Tổng hợp phim ${title} chất lượng HD tại Nghiền Phim`,
       locale: 'vi_VN',
-      siteName: 'Ophim',
+      siteName: 'Nghiền Phim',
     },
     alternates: { canonical: `/quoc-gia/${slug}` },
   }

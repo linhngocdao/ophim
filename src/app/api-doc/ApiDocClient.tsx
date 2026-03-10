@@ -400,7 +400,7 @@ export function ApiDocClient() {
               API Documentation
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3">Ophim Public API</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3">Nghiền Phim Public API</h1>
           <p className="text-muted-foreground text-base sm:text-lg max-w-2xl">
             Tích hợp kho phim hơn 34.000 bộ vào ứng dụng của bạn. RESTful API, miễn phí, không cần
             xác thực.

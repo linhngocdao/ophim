@@ -10,14 +10,14 @@ export async function generateMetadata({
   const title = getTypeLabel(type)
 
   return {
-    title: `${title} - Xem Online HD | Ophim`,
-    description: `Xem ${title.toLowerCase()} online miễn phí tại Ophim. Cập nhật nhanh nhất, chất lượng HD, vietsub và thuyết minh.`,
+    title: `${title} - Xem Online HD | Nghiền Phim`,
+    description: `Xem ${title.toLowerCase()} online miễn phí tại Nghiền Phim. Cập nhật nhanh nhất, chất lượng HD, vietsub và thuyết minh.`,
     keywords: [title.toLowerCase(), 'xem phim online', 'phim hd', 'vietsub', 'thuyết minh'],
     openGraph: {
-      title: `${title} | Ophim`,
-      description: `Tổng hợp ${title.toLowerCase()} chất lượng cao tại Ophim`,
+      title: `${title} | Nghiền Phim`,
+      description: `Tổng hợp ${title.toLowerCase()} chất lượng cao tại Nghiền Phim`,
       locale: 'vi_VN',
-      siteName: 'Ophim',
+      siteName: 'Nghiền Phim',
     },
     alternates: { canonical: `/danh-sach/${type}` },
   }

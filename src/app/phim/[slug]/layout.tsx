@@ -27,7 +27,7 @@ export async function generateMetadata({
     const rawContent: string = movie.content ?? ''
     const description =
       rawContent.replace(/<[^>]*>/g, '').slice(0, 160) ||
-      `Xem phim ${movie.name} online miễn phí HD tại Ophim.`
+      `Xem phim ${movie.name} online miễn phí HD tại Nghiền Phim.`
 
     const thumb: string = movie.thumb_url ?? ''
     const imageUrl = thumb.startsWith('http') ? thumb : `${IMAGE_CDN}${thumb}`
@@ -47,16 +47,16 @@ export async function generateMetadata({
         ...actors.slice(0, 5),
       ].filter(Boolean),
       openGraph: {
-        title: `${movie.name} | Ophim`,
+        title: `${movie.name} | Nghiền Phim`,
         description,
         images: [{ url: imageUrl, width: 800, height: 1200, alt: movie.name }],
         type: 'video.movie',
         locale: 'vi_VN',
-        siteName: 'Ophim',
+        siteName: 'Nghiền Phim',
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${movie.name} | Ophim`,
+        title: `${movie.name} | Nghiền Phim`,
         description,
         images: [imageUrl],
       },
@@ -65,8 +65,8 @@ export async function generateMetadata({
   } catch {
     // Always fall back — never block render
     return {
-      title: 'Xem Phim Online HD | Ophim',
-      description: 'Xem phim online miễn phí chất lượng HD tại Ophim.',
+      title: 'Xem Phim Online HD | Nghiền Phim',
+      description: 'Xem phim online miễn phí chất lượng HD tại Nghiền Phim.',
     }
   }
 }

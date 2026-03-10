@@ -62,7 +62,7 @@ export function Header() {
                 <Film className="w-5 h-5 text-white" />
               </div>
               <span className="font-bold text-xl hidden sm:block">
-                Oph<span className="text-[#f31260]">im</span>
+                Nghiền <span className="text-[#f31260]">Phim</span>
               </span>
             </Link>
 

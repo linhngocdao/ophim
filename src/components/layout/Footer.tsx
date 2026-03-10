@@ -43,7 +43,7 @@ export function Footer() {
                 <Film className="w-5 h-5 text-white" />
               </div>
               <span className="font-bold text-xl">
-                Oph<span className="text-[#f31260]">im</span>
+                Nghiền <span className="text-[#f31260]">Phim</span>
               </span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -107,11 +107,9 @@ export function Footer() {
 
         <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Ophim. Trang web xem phim online chất lượng cao.
+            © {new Date().getFullYear()} Nghiền Phim. Trang web xem phim online chất lượng cao.
           </p>
-          <p className="text-muted-foreground/50 text-xs">
-            Dữ liệu từ <span className="text-muted-foreground">ophim1.com</span>
-          </p>
+
         </div>
       </div>
     </footer>
