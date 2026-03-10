@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:ophim18.cc)",
+      "WebFetch(domain:ophim1.com)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-alias \"@/*\" --no-git --yes 2>&1)",
+      "Read(//private/tmp/**)",
+      "Bash(npx create-next-app@latest ophim-temp --typescript --tailwind --app --src-dir --import-alias \"@/*\" --no-git --yes)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest init -d 2>&1)"
+    ]
+  }
+}
