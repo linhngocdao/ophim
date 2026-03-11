@@ -1,8 +1,5 @@
 {
   "crons": [
-    {
-      "path": "/api/cron/sync-ophim",
-      "schedule": "0 */2 * * *"
-    }
+    { "path": "/api/cron/sync-ophim", "schedule": "0 3 * * *" }
   ]
 }
