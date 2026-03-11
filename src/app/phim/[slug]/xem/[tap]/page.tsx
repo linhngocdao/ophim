@@ -2,8 +2,9 @@
 
 import { use, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ChevronLeft, ChevronRight, List } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, List, Lock } from 'lucide-react'
 import { useMovieDetail } from '@/hooks/useMovies'
+import { useAuthUser } from '@/hooks/useAuth'
 import { VideoPlayer } from '@/components/movies/VideoPlayer'
 import { EpisodeList } from '@/components/movies/EpisodeList'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -16,6 +17,7 @@ interface WatchPageProps {
 export default function WatchPage({ params }: WatchPageProps) {
   const { slug, tap } = use(params)
   const { data, isLoading, error } = useMovieDetail(slug)
+  const { data: authUser } = useAuthUser()
   const { addToHistory } = useMovieStore()
 
   const movie = data?.data?.item
@@ -45,9 +47,13 @@ export default function WatchPage({ params }: WatchPageProps) {
   const currentEpIndex = allEps.findIndex((e) => e.slug === tap)
   const prevEp = currentEpIndex > 0 ? allEps[currentEpIndex - 1] : null
   const nextEp = currentEpIndex < allEps.length - 1 ? allEps[currentEpIndex + 1] : null
+  const isAuthenticated = Boolean(authUser)
+  const lockedFromIndex = 1
+  const shouldGateEpisodes = allEps.length > 1
+  const isLockedEpisode = shouldGateEpisodes && !isAuthenticated && currentEpIndex >= lockedFromIndex
 
   useEffect(() => {
-    if (movie && currentEpisode) {
+    if (movie && currentEpisode && !isLockedEpisode) {
       const totalEpisodes = Math.max(allEps.length, 1)
       const computedProgress = Math.round(((currentEpIndex + 1) / totalEpisodes) * 100)
       addToHistory({
@@ -58,7 +64,7 @@ export default function WatchPage({ params }: WatchPageProps) {
         watchedAt: new Date().toISOString(),
       })
     }
-  }, [movie, currentEpisode, addToHistory, allEps.length, currentEpIndex])
+  }, [movie, currentEpisode, addToHistory, allEps.length, currentEpIndex, isLockedEpisode])
 
   // Don't show "not found" while still loading
   if (isLoading || (!data && !error)) {
@@ -119,11 +125,40 @@ export default function WatchPage({ params }: WatchPageProps) {
       {/* Video Player */}
       <div className="bg-black">
         <div className="max-w-screen-2xl mx-auto">
-          <VideoPlayer
-            embedUrl={embedUrl}
-            title={`${movie.name} - Tập ${currentEpisode.name}`}
-            className="w-full"
-          />
+          {isLockedEpisode ? (
+            <div className="flex aspect-video w-full items-center justify-center bg-gradient-to-b from-[#0f0f18] to-black px-4">
+              <div className="w-full max-w-xl rounded-2xl border border-white/10 bg-black/40 p-6 text-center">
+                <p className="mx-auto mb-3 inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-xs text-amber-200">
+                  <Lock className="h-3.5 w-3.5" />
+                  Nội dung dành cho thành viên
+                </p>
+                <h3 className="text-xl font-bold text-white">Đăng nhập để xem các tập tiếp theo</h3>
+                <p className="mt-2 text-sm text-zinc-300">
+                  Bạn đang xem tập {currentEpisode.name}. Từ tập 2 trở đi cần đăng nhập để tiếp tục xem và lưu lịch sử.
+                </p>
+                <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                  <Link
+                    href={`/dang-nhap?next=${encodeURIComponent(`/phim/${slug}/xem/${tap}`)}`}
+                    className="rounded-full bg-[#f31260] px-5 py-2 text-sm font-semibold text-white hover:bg-[#e01055] transition-colors"
+                  >
+                    Đăng nhập để xem ngay
+                  </Link>
+                  <Link
+                    href="/dang-ky"
+                    className="rounded-full border border-white/20 bg-white/5 px-5 py-2 text-sm font-medium text-zinc-200 hover:bg-white/10 transition-colors"
+                  >
+                    Tạo tài khoản
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <VideoPlayer
+              embedUrl={embedUrl}
+              title={`${movie.name} - Tập ${currentEpisode.name}`}
+              className="w-full"
+            />
+          )}
         </div>
       </div>
 
@@ -162,13 +197,23 @@ export default function WatchPage({ params }: WatchPageProps) {
               </span>
             )}
             {nextEp ? (
-              <Link
-                href={`/phim/${slug}/xem/${nextEp.slug}`}
-                className="flex items-center gap-1.5 bg-[#f31260] hover:bg-[#e01055] text-white px-4 py-2 rounded-full text-sm transition-colors"
-              >
-                Tập tiếp theo
-                <ChevronRight className="w-4 h-4" />
-              </Link>
+              shouldGateEpisodes && !isAuthenticated && currentEpIndex + 1 >= lockedFromIndex ? (
+                <Link
+                  href={`/dang-nhap?next=${encodeURIComponent(`/phim/${slug}/xem/${nextEp.slug}`)}`}
+                  className="flex items-center gap-1.5 border border-amber-400/40 bg-amber-500/10 text-amber-200 px-4 py-2 rounded-full text-sm transition-colors hover:bg-amber-500/20"
+                >
+                  <Lock className="w-4 h-4" />
+                  Đăng nhập để xem tiếp
+                </Link>
+              ) : (
+                <Link
+                  href={`/phim/${slug}/xem/${nextEp.slug}`}
+                  className="flex items-center gap-1.5 bg-[#f31260] hover:bg-[#e01055] text-white px-4 py-2 rounded-full text-sm transition-colors"
+                >
+                  Tập tiếp theo
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              )
             ) : (
               <span className="flex items-center gap-1.5 bg-secondary border border-border text-muted-foreground px-4 py-2 rounded-full text-sm cursor-not-allowed opacity-50">
                 Tập tiếp theo
@@ -184,7 +229,18 @@ export default function WatchPage({ params }: WatchPageProps) {
             <List className="w-4 h-4 text-[#f31260]" />
             Danh sách tập
           </h2>
-          <EpisodeList episodes={episodes} movieSlug={slug} currentEpisodeSlug={tap} />
+          {shouldGateEpisodes && !isAuthenticated && (
+            <p className="mb-3 rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+              Xem miễn phí tập đầu. Từ tập 2 cần đăng nhập để tiếp tục.
+            </p>
+          )}
+          <EpisodeList
+            episodes={episodes}
+            movieSlug={slug}
+            currentEpisodeSlug={tap}
+            lockedFromIndex={shouldGateEpisodes ? lockedFromIndex : undefined}
+            isAuthenticated={isAuthenticated}
+          />
         </div>
 
         {/* Movie info */}

@@ -58,21 +58,24 @@ export function Header() {
     setOpenDropdown((prev) => (prev === name ? null : name))
   }
 
+  const desktopNavItemClass =
+    'px-1 py-2 text-[15px] font-medium text-zinc-300 transition-colors hover:text-white'
+
   return (
     <>
       <header
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
           isScrolled || isMenuOpen || isMobileSearchOpen
-            ? 'bg-background/95 backdrop-blur-md shadow-md border-b border-border'
-            : 'bg-gradient-to-b from-black/70 to-transparent'
+            ? 'bg-[#0a0a0a] shadow-[0_8px_30px_rgba(0,0,0,0.5)] border-b border-white/10'
+            : 'bg-gradient-to-b from-black/80 via-black/55 to-transparent'
         )}
       >
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-8 h-8 rounded-lg bg-[#f31260] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#f31260] to-[#ff6b9f] flex items-center justify-center shadow-[0_6px_22px_rgba(243,18,96,0.45)]">
                 <Film className="w-5 h-5 text-white" />
               </div>
               <span className="font-bold text-xl hidden sm:block">
@@ -81,12 +84,14 @@ export function Header() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-6">
               <Link
                 href="/"
                 className={cn(
-                  'px-3 py-2 rounded text-sm font-medium transition-colors',
-                  pathname === '/' ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                  desktopNavItemClass,
+                  pathname === '/'
+                    ? 'text-white'
+                    : 'text-zinc-300 hover:text-white'
                 )}
               >
                 Trang Chủ
@@ -98,8 +103,10 @@ export function Header() {
                   onMouseEnter={() => setOpenDropdown('danh-sach')}
                   onMouseLeave={() => setOpenDropdown(null)}
                   className={cn(
-                    'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
-                    pathname.startsWith('/danh-sach') ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                    `${desktopNavItemClass} flex items-center gap-1.5`,
+                    pathname.startsWith('/danh-sach')
+                      ? 'text-white'
+                      : 'text-zinc-300 hover:text-white'
                   )}
                 >
                   Danh Sách
@@ -107,19 +114,22 @@ export function Header() {
                 </button>
                 {openDropdown === 'danh-sach' && (
                   <div
-                    className="absolute top-full left-0 mt-1 w-52 bg-popover border border-border rounded-lg shadow-xl py-1 z-50"
+                    className="absolute top-full left-0 mt-2 w-[420px] bg-[#141414] border border-white/10 rounded-xl shadow-2xl p-3 z-50"
                     onMouseEnter={() => setOpenDropdown('danh-sach')}
                     onMouseLeave={() => setOpenDropdown(null)}
                   >
-                    {MOVIE_TYPES.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-4 py-2 text-sm text-popover-foreground hover:text-foreground hover:bg-secondary transition-colors"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+                    <p className="px-1 pb-2 text-xs uppercase tracking-[0.16em] text-zinc-500">Danh sách nổi bật</p>
+                    <div className="grid grid-cols-2 gap-1">
+                      {MOVIE_TYPES.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="rounded-lg px-3 py-2 text-sm text-zinc-200 transition-colors hover:bg-[#2a2a2a] hover:text-white"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -130,8 +140,10 @@ export function Header() {
                   onMouseEnter={() => setOpenDropdown('the-loai')}
                   onMouseLeave={() => setOpenDropdown(null)}
                   className={cn(
-                    'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
-                    pathname.startsWith('/the-loai') ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                    `${desktopNavItemClass} flex items-center gap-1.5`,
+                    pathname.startsWith('/the-loai')
+                      ? 'text-white'
+                      : 'text-zinc-300 hover:text-white'
                   )}
                 >
                   Thể Loại
@@ -139,16 +151,17 @@ export function Header() {
                 </button>
                 {openDropdown === 'the-loai' && categories && (
                   <div
-                    className="absolute top-full left-0 mt-1 w-64 bg-popover border border-border rounded-lg shadow-xl py-2 z-50"
+                    className="absolute top-full left-0 mt-2 w-[560px] bg-[#141414] border border-white/10 rounded-xl shadow-2xl p-3 z-50"
                     onMouseEnter={() => setOpenDropdown('the-loai')}
                     onMouseLeave={() => setOpenDropdown(null)}
                   >
-                    <div className="grid grid-cols-2 gap-0.5 px-2">
+                    <p className="px-1 pb-2 text-xs uppercase tracking-[0.16em] text-zinc-500">Thể loại</p>
+                    <div className="grid max-h-[320px] grid-cols-3 gap-1 overflow-y-auto pr-1">
                       {categories.map((cat) => (
                         <Link
                           key={cat.id}
                           href={`/the-loai/${cat.slug}`}
-                          className="block px-3 py-1.5 text-sm text-popover-foreground hover:text-foreground hover:bg-secondary rounded transition-colors"
+                          className="rounded-lg px-3 py-2 text-sm text-zinc-200 transition-colors hover:bg-[#2a2a2a] hover:text-white"
                         >
                           {cat.name}
                         </Link>
@@ -164,8 +177,10 @@ export function Header() {
                   onMouseEnter={() => setOpenDropdown('quoc-gia')}
                   onMouseLeave={() => setOpenDropdown(null)}
                   className={cn(
-                    'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
-                    pathname.startsWith('/quoc-gia') ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                    `${desktopNavItemClass} flex items-center gap-1.5`,
+                    pathname.startsWith('/quoc-gia')
+                      ? 'text-white'
+                      : 'text-zinc-300 hover:text-white'
                   )}
                 >
                   Quốc Gia
@@ -173,16 +188,17 @@ export function Header() {
                 </button>
                 {openDropdown === 'quoc-gia' && countries && (
                   <div
-                    className="absolute top-full left-0 mt-1 w-64 bg-popover border border-border rounded-lg shadow-xl py-2 z-50"
+                    className="absolute top-full left-0 mt-2 w-[520px] bg-[#141414] border border-white/10 rounded-xl shadow-2xl p-3 z-50"
                     onMouseEnter={() => setOpenDropdown('quoc-gia')}
                     onMouseLeave={() => setOpenDropdown(null)}
                   >
-                    <div className="grid grid-cols-2 gap-0.5 px-2">
+                    <p className="px-1 pb-2 text-xs uppercase tracking-[0.16em] text-zinc-500">Quốc gia</p>
+                    <div className="grid max-h-[300px] grid-cols-3 gap-1 overflow-y-auto pr-1">
                       {countries.map((country) => (
                         <Link
                           key={country.id}
                           href={`/quoc-gia/${country.slug}`}
-                          className="block px-3 py-1.5 text-sm text-popover-foreground hover:text-foreground hover:bg-secondary rounded transition-colors"
+                          className="rounded-lg px-3 py-2 text-sm text-zinc-200 transition-colors hover:bg-[#2a2a2a] hover:text-white"
                         >
                           {country.name}
                         </Link>
@@ -196,10 +212,10 @@ export function Header() {
                   onMouseEnter={() => setOpenDropdown('kham-pha')}
                   onMouseLeave={() => setOpenDropdown(null)}
                   className={cn(
-                    'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
+                    `${desktopNavItemClass} flex items-center gap-1.5`,
                     pathname === '/api-doc' || pathname === '/yeu-thich' || pathname === '/lich-su' || pathname === '/de-xuat'
-                      ? 'text-[#f31260]'
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'text-white'
+                      : 'text-zinc-300 hover:text-white'
                   )}
                 >
                   <Compass className="w-3.5 h-3.5" />
@@ -208,10 +224,12 @@ export function Header() {
                 </button>
                 {openDropdown === 'kham-pha' && (
                   <div
-                    className="absolute top-full left-0 mt-1 w-52 bg-popover border border-border rounded-lg shadow-xl py-1 z-50"
+                    className="absolute top-full left-0 mt-2 w-[300px] bg-[#141414] border border-white/10 rounded-xl shadow-2xl p-3 z-50"
                     onMouseEnter={() => setOpenDropdown('kham-pha')}
                     onMouseLeave={() => setOpenDropdown(null)}
                   >
+                    <p className="px-1 pb-2 text-xs uppercase tracking-[0.16em] text-zinc-500">Khám phá</p>
+                    <div className="grid grid-cols-1 gap-1">
                     {EXPLORE_LINKS.map((item) => {
                       const Icon = item.icon
                       const isFav = item.href === '/yeu-thich'
@@ -219,7 +237,7 @@ export function Header() {
                         <Link
                           key={item.href}
                           href={item.href}
-                          className="flex items-center justify-between px-4 py-2 text-sm text-popover-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                          className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm text-zinc-200 transition-colors hover:bg-[#2a2a2a] hover:text-white"
                         >
                           <span className="inline-flex items-center gap-2">
                             <Icon className="h-3.5 w-3.5" />
@@ -233,6 +251,7 @@ export function Header() {
                         </Link>
                       )
                     })}
+                    </div>
                   </div>
                 )}
               </div>
@@ -241,8 +260,10 @@ export function Header() {
                 <Link
                   href="/quan-tri"
                   className={cn(
-                    'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
-                    pathname.startsWith('/quan-tri') ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                    `${desktopNavItemClass} flex items-center gap-1`,
+                    pathname.startsWith('/quan-tri')
+                      ? 'text-white'
+                      : 'text-zinc-300 hover:text-white'
                   )}
                 >
                   Quản Trị
@@ -256,7 +277,7 @@ export function Header() {
                   </span>
                   <button
                     onClick={() => void logout()}
-                    className="flex items-center gap-1 px-3 py-2 rounded text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-1 text-sm font-medium text-zinc-300 hover:text-white transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     Đăng Xuất
@@ -267,8 +288,10 @@ export function Header() {
                   <Link
                     href="/dang-nhap"
                     className={cn(
-                      'px-3 py-2 rounded text-sm font-medium transition-colors',
-                      pathname.startsWith('/dang-nhap') ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                      `${desktopNavItemClass}`,
+                      pathname.startsWith('/dang-nhap')
+                        ? 'text-white'
+                        : 'text-zinc-300 hover:text-white'
                     )}
                   >
                     Đăng Nhập
@@ -276,8 +299,8 @@ export function Header() {
                   <Link
                     href="/dang-ky"
                     className={cn(
-                      'rounded-full border border-[#f31260]/50 bg-[#f31260]/15 px-3 py-1.5 text-sm font-medium transition-colors',
-                      pathname.startsWith('/dang-ky') ? 'text-[#ff8db9]' : 'text-[#ff97bf] hover:bg-[#f31260]/25'
+                      'rounded border border-white/25 bg-white/10 px-3 py-1.5 text-sm font-medium transition-colors',
+                      pathname.startsWith('/dang-ky') ? 'text-white' : 'text-zinc-100 hover:bg-white/20'
                     )}
                   >
                     Đăng Ký
@@ -291,7 +314,7 @@ export function Header() {
               {/* Desktop search */}
               <button
                 onClick={() => setIsDesktopSearchOpen(true)}
-                className="hidden md:flex items-center justify-center w-9 h-9 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                className="hidden md:flex items-center justify-center w-9 h-9 rounded-full text-zinc-300 hover:text-white transition-colors"
               >
                 <Search className="w-5 h-5" />
               </button>

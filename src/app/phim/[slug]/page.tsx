@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Play, Heart, Star, Clock, Calendar, Globe, Users, Clapperboard, Tag, Youtube } from 'lucide-react'
 import { useMovieDetail, useMoviesByType } from '@/hooks/useMovies'
+import { useAuthUser } from '@/hooks/useAuth'
 import { getImageUrl } from '@/lib/api'
 import { EpisodeList } from '@/components/movies/EpisodeList'
 import { MovieCarousel } from '@/components/movies/MovieCarousel'
@@ -23,6 +24,7 @@ interface MovieDetailPageProps {
 export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   const { slug } = use(params)
   const { data, isLoading, error } = useMovieDetail(slug)
+  const { data: authUser } = useAuthUser()
   const { addFavorite, removeFavorite, isFavorite } = useMovieStore()
   const [imagePage, setImagePage] = useState(1)
 
@@ -84,6 +86,10 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   const firstEpisode = episodes
     ?.flatMap((s) => s.server_data)
     .find((ep) => !!ep.link_embed)
+  const validEpisodeCount = episodes
+    .flatMap((item) => item.server_data || [])
+    .filter((ep) => !!ep.link_embed).length
+  const shouldGateEpisodes = validEpisodeCount > 1
 
   const handleFavoriteToggle = () => {
     if (isMovieFavorite) {
@@ -447,7 +453,17 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
               <span className="w-1 h-5 bg-[#f31260] rounded-full" />
               Danh sách tập
             </h2>
-            <EpisodeList episodes={episodes} movieSlug={movie.slug} />
+            {shouldGateEpisodes && !authUser && (
+              <p className="mb-3 rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+                Xem miễn phí tập đầu. Từ tập 2 trở đi cần đăng nhập để tiếp tục xem.
+              </p>
+            )}
+            <EpisodeList
+              episodes={episodes}
+              movieSlug={movie.slug}
+              lockedFromIndex={shouldGateEpisodes ? 1 : undefined}
+              isAuthenticated={Boolean(authUser)}
+            />
           </div>
         )}
 

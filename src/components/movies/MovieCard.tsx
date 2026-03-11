@@ -36,14 +36,14 @@ export function MovieCard({ movie, className, priority = false }: MovieCardProps
   const episode = formatEpisode(movie.episode_current, movie.episode_total)
 
   return (
-    <Link href={`/phim/${movie.slug}`} className={cn('group flex flex-col h-full w-full', className)}>
-      <div className="relative w-full pt-[150%] overflow-hidden rounded-lg bg-[#1a1a1a] shrink-0">
+    <Link href={`/phim/${movie.slug}`} className={cn('group block h-full w-full', className)}>
+      <div className="relative w-full pt-[150%] overflow-hidden rounded-md bg-[#1a1a1a] border border-white/5 transition-all duration-300 group-hover:z-20 group-hover:scale-[1.08] group-hover:border-white/20 group-hover:shadow-[0_18px_45px_rgba(0,0,0,0.65)]">
         <Image
           src={imageUrl}
           alt={movie.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           priority={priority}
           loading={priority ? 'eager' : 'lazy'}
           placeholder="blur"
@@ -52,12 +52,12 @@ export function MovieCard({ movie, className, priority = false }: MovieCardProps
         />
 
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
           <div className="flex flex-col items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-            <div className="w-12 h-12 rounded-full bg-[#f31260] flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-full bg-[#e50914] flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
               <Play className="w-5 h-5 text-white fill-white ml-0.5" />
             </div>
-            <span className="text-white text-xs font-medium px-2 py-1 bg-black/50 rounded">
+            <span className="text-white text-xs font-medium px-2 py-1 bg-black/60 rounded">
               Xem ngay
             </span>
           </div>
@@ -66,7 +66,7 @@ export function MovieCard({ movie, className, priority = false }: MovieCardProps
         {/* Top-left: Quality + Lang */}
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-10 w-[calc(100%-16px)]">
           {movie.quality && (
-            <span className="bg-[#f31260] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase leading-none w-max max-w-[90%] truncate">
+            <span className="bg-[#e50914] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase leading-none w-max max-w-[90%] truncate">
               {movie.quality}
             </span>
           )}
@@ -105,16 +105,11 @@ export function MovieCard({ movie, className, priority = false }: MovieCardProps
         </div>
       </div>
 
-      {/* Title */}
-      <div className="mt-2 flex flex-col flex-1">
-        <h3 className="text-white text-sm font-medium line-clamp-1 group-hover:text-[#f31260] transition-colors" title={movie.name}>
+      <div className="mt-2 px-0.5">
+        <h3 className="text-white text-sm font-medium line-clamp-1 group-hover:text-[#e50914] transition-colors" title={movie.name}>
           {movie.name}
         </h3>
-        <p className="text-gray-500 text-xs line-clamp-1 mt-0.5" title={movie.origin_name}>{movie.origin_name}</p>
-        <div className="flex items-center gap-2 text-gray-600 text-[11px] mt-1">
-          <span>{movie.year}</span>
-          {movie.time && <span className="truncate">• {movie.time}</span>}
-        </div>
+        <p className="text-gray-500 text-[11px] line-clamp-1 mt-0.5" title={movie.origin_name}>{movie.origin_name}</p>
       </div>
     </Link>
   )

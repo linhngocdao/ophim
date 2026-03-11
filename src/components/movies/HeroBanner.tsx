@@ -65,7 +65,7 @@ export function HeroBanner({ movies, loading }: HeroBannerProps) {
   const episode = formatEpisode(current.episode_current, current.episode_total)
 
   return (
-    <div className="relative w-full aspect-[16/7] min-h-[320px] max-h-[600px] overflow-hidden bg-gray-900">
+    <div className="relative w-full aspect-[16/7] min-h-[360px] max-h-[680px] overflow-hidden bg-gray-900">
       {/* Background image */}
       {featuredMovies.map((movie, index) => (
         <div
@@ -87,16 +87,17 @@ export function HeroBanner({ movies, loading }: HeroBannerProps) {
       ))}
 
       {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/65 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-black/25 to-transparent" />
 
       {/* Content */}
       <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 md:p-16">
         <div className="max-w-2xl space-y-4">
+          <p className="text-xs uppercase tracking-[0.22em] text-zinc-300">N Series</p>
           {/* Badges */}
           <div className="flex flex-wrap items-center gap-2">
             {current.quality && (
-              <span className="bg-[#f31260] text-white text-xs font-bold px-2 py-0.5 rounded uppercase">
+              <span className="bg-[#e50914] text-white text-xs font-bold px-2 py-0.5 rounded uppercase">
                 {current.quality}
               </span>
             )}
@@ -123,9 +124,9 @@ export function HeroBanner({ movies, loading }: HeroBannerProps) {
 
           {/* Title */}
           <div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight line-clamp-2">
-              {current.name}
-            </h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight line-clamp-2">
+                {current.name}
+              </h1>
             {current.origin_name && current.origin_name !== current.name && (
               <p className="text-gray-400 text-sm mt-1">{current.origin_name}</p>
             )}
@@ -158,14 +159,14 @@ export function HeroBanner({ movies, loading }: HeroBannerProps) {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               href={`/phim/${current.slug}`}
-              className="flex items-center gap-2 bg-[#f31260] hover:bg-[#e01055] text-white font-semibold px-6 py-2.5 rounded-full transition-colors shadow-lg shadow-[#f31260]/20"
+              className="flex items-center gap-2 bg-white hover:bg-zinc-200 text-black font-semibold px-6 py-2.5 rounded transition-colors"
             >
               <Play className="w-4 h-4 fill-white" />
               Xem ngay
             </Link>
             <Link
               href={`/phim/${current.slug}`}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium px-6 py-2.5 rounded-full transition-colors backdrop-blur-sm"
+              className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium px-6 py-2.5 rounded transition-colors backdrop-blur-sm"
             >
               <Info className="w-4 h-4" />
               Chi tiết
@@ -179,13 +180,13 @@ export function HeroBanner({ movies, loading }: HeroBannerProps) {
         <>
           <button
             onClick={goPrev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 border border-white/20 flex items-center justify-center text-white hover:bg-[#f31260] hover:border-[#f31260] transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-16 rounded-r-md bg-black/45 border border-white/15 flex items-center justify-center text-white hover:bg-black/70 transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={goNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 border border-white/20 flex items-center justify-center text-white hover:bg-[#f31260] hover:border-[#f31260] transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-16 rounded-l-md bg-black/45 border border-white/15 flex items-center justify-center text-white hover:bg-black/70 transition-colors"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -202,7 +203,7 @@ export function HeroBanner({ movies, loading }: HeroBannerProps) {
               className={cn(
                 'rounded-full transition-all duration-300',
                 index === currentIndex
-                  ? 'bg-[#f31260] w-6 h-2'
+                  ? 'bg-[#e50914] w-6 h-2'
                   : 'bg-white/40 hover:bg-white/70 w-2 h-2'
               )}
             />
@@ -219,7 +220,7 @@ export function HeroBanner({ movies, loading }: HeroBannerProps) {
               onClick={() => setCurrentIndex(index)}
               className={cn(
                 'relative w-16 h-10 rounded overflow-hidden border-2 transition-all',
-                index === currentIndex ? 'border-[#f31260] opacity-100' : 'border-transparent opacity-50 hover:opacity-80'
+                index === currentIndex ? 'border-[#e50914] opacity-100' : 'border-transparent opacity-50 hover:opacity-80'
               )}
             >
               <Image
