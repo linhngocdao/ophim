@@ -1,27 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-const BASE_URL = 'https://ophim1.com'
+import { queryMovies } from '@/lib/server/movie-db'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const keyword = searchParams.get('keyword') || ''
-  const page = searchParams.get('page') || '1'
+  const country = searchParams.get('country') || ''
+  const yearRaw = Number(searchParams.get('year') || '')
+  const year = Number.isFinite(yearRaw) ? yearRaw : undefined
+  const page = Number(searchParams.get('page') || '1')
 
-  if (!keyword) {
-    return NextResponse.json({ error: 'Keyword is required' }, { status: 400 })
+  if (!keyword && !country && !year) {
+    return NextResponse.json({ error: 'At least one filter is required' }, { status: 400 })
   }
 
   try {
-    const res = await fetch(
-      `${BASE_URL}/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}&page=${page}`,
-      { next: { revalidate: 60 } }
-    )
-
-    if (!res.ok) {
-      return NextResponse.json({ error: 'Search failed' }, { status: res.status })
-    }
-
-    const data = await res.json()
+    const data = await queryMovies({
+      keyword: keyword || undefined,
+      countrySlug: country || undefined,
+      year,
+      page,
+      type: 'phim-moi-cap-nhat',
+    })
     return NextResponse.json(data)
   } catch (error) {
     console.error('Search API error:', error)

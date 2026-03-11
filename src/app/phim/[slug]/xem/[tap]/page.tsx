@@ -48,14 +48,17 @@ export default function WatchPage({ params }: WatchPageProps) {
 
   useEffect(() => {
     if (movie && currentEpisode) {
+      const totalEpisodes = Math.max(allEps.length, 1)
+      const computedProgress = Math.round(((currentEpIndex + 1) / totalEpisodes) * 100)
       addToHistory({
         movie,
         episodeName: currentEpisode.name,
         episodeSlug: currentEpisode.slug,
+        watchProgress: computedProgress,
         watchedAt: new Date().toISOString(),
       })
     }
-  }, [movie, currentEpisode, addToHistory])
+  }, [movie, currentEpisode, addToHistory, allEps.length, currentEpIndex])
 
   // Don't show "not found" while still loading
   if (isLoading || (!data && !error)) {

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
+import { getMongoDb } from '@/lib/server/mongodb'
+import type { Movie } from '@/types/movie'
 
-const BASE_URL = 'https://ophim1.com'
 const IMAGE_CDN = 'https://img.ophim.live/uploads/movies/'
 
 export async function generateMetadata({
@@ -11,17 +12,8 @@ export async function generateMetadata({
   const { slug } = await params
 
   try {
-    // 4-second timeout to avoid blocking page render
-    const res = await fetch(`${BASE_URL}/v1/api/phim/${slug}`, {
-      signal: AbortSignal.timeout(4000),
-      next: { revalidate: 3600 },
-    })
-
-    if (!res.ok) throw new Error('fetch failed')
-
-    const json = await res.json()
-    const movie = json?.data?.item
-
+    const db = await getMongoDb()
+    const movie = await db.collection<Movie>('movies').findOne({ slug }, { projection: { searchableText: 0 } as never })
     if (!movie) throw new Error('no movie')
 
     const rawContent: string = movie.content ?? ''

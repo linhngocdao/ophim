@@ -1,11 +1,15 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { getMovieListLabel } from '@/lib/movie-list-types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 export function getTypeLabel(type: string): string {
+  const listLabel = getMovieListLabel(type)
+  if (listLabel) return listLabel
+
   const typeMap: Record<string, string> = {
     movie: 'Phim Lẻ',
     series: 'Phim Bộ',
@@ -15,7 +19,6 @@ export function getTypeLabel(type: string): string {
     'phim-bo': 'Phim Bộ',
     'hoat-hinh': 'Hoạt Hình',
     'tv-shows': 'TV Shows',
-    'phim-moi-cap-nhat': 'Phim Mới Cập Nhật',
   }
   return typeMap[type] || type
 }

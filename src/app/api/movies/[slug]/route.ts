@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-const BASE_URL = 'https://ophim1.com'
+import { getMovieBySlug } from '@/lib/server/movie-db'
 
 export async function GET(
   request: NextRequest,
@@ -9,15 +8,10 @@ export async function GET(
   const { slug } = await params
 
   try {
-    const res = await fetch(`${BASE_URL}/v1/api/phim/${slug}`, {
-      next: { revalidate: 300 },
-    })
-
-    if (!res.ok) {
-      return NextResponse.json({ error: 'Movie not found' }, { status: res.status })
+    const data = await getMovieBySlug(slug)
+    if (!data) {
+      return NextResponse.json({ error: 'Movie not found' }, { status: 404 })
     }
-
-    const data = await res.json()
     return NextResponse.json(data)
   } catch (error) {
     console.error('API route error:', error)

@@ -6,7 +6,7 @@ import { useMovieStore } from '@/store/useMovieStore'
 import { MovieGrid } from '@/components/movies/MovieGrid'
 
 export default function FavoritesPage() {
-  const { favorites, clearHistory } = useMovieStore()
+  const { favorites } = useMovieStore()
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">

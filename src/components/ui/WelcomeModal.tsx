@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { X, Film, Facebook, Send, Youtube, Star, Zap, Shield } from 'lucide-react'
+import { X, Film, Facebook, Send, Star, Zap, Shield } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const STORAGE_KEY = 'ophim_welcomed_v1'

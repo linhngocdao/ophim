@@ -1,11 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Movie } from '@/types/movie'
+import { clearWatchHistory, syncFavorite, syncWatchHistory, unsyncFavorite } from '@/lib/user-api'
 
 interface WatchHistory {
   movie: Movie
   episodeName: string
   episodeSlug: string
+  watchProgress?: number
   watchedAt: string
 }
 
@@ -22,6 +24,7 @@ interface MovieStore {
 
   // Watch History
   watchHistory: WatchHistory[]
+  setWatchHistory: (items: WatchHistory[]) => void
   addToHistory: (data: WatchHistory) => void
   clearHistory: () => void
 
@@ -39,25 +42,43 @@ export const useMovieStore = create<MovieStore>()(
       setSearchQuery: (query) => set({ searchQuery: query }),
 
       favorites: [],
-      addFavorite: (movie) =>
+      addFavorite: (movie) => {
         set((state) => ({
           favorites: [...state.favorites.filter((f) => f._id !== movie._id), movie],
-        })),
-      removeFavorite: (movieId) =>
+        }))
+        if (typeof window !== 'undefined') {
+          void syncFavorite(movie).catch(() => undefined)
+        }
+      },
+      removeFavorite: (movieId) => {
         set((state) => ({
           favorites: state.favorites.filter((f) => f._id !== movieId),
-        })),
+        }))
+        if (typeof window !== 'undefined') {
+          void unsyncFavorite(movieId).catch(() => undefined)
+        }
+      },
       isFavorite: (movieId) => get().favorites.some((f) => f._id === movieId),
 
       watchHistory: [],
-      addToHistory: (data) =>
+      setWatchHistory: (items) => set({ watchHistory: items.slice(0, 50) }),
+      addToHistory: (data) => {
         set((state) => ({
           watchHistory: [
             data,
             ...state.watchHistory.filter((h) => h.movie._id !== data.movie._id),
           ].slice(0, 50),
-        })),
-      clearHistory: () => set({ watchHistory: [] }),
+        }))
+        if (typeof window !== 'undefined') {
+          void syncWatchHistory(data).catch(() => undefined)
+        }
+      },
+      clearHistory: () => {
+        set({ watchHistory: [] })
+        if (typeof window !== 'undefined') {
+          void clearWatchHistory().catch(() => undefined)
+        }
+      },
 
       currentCategory: null,
       currentCountry: null,

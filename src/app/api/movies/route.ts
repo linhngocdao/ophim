@@ -1,22 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-const BASE_URL = 'https://ophim1.com'
+import { queryMovies } from '@/lib/server/movie-db'
+import { isSupportedMovieListSlug } from '@/lib/movie-list-types'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
-  const type = searchParams.get('type') || 'phim-moi-cap-nhat'
-  const page = searchParams.get('page') || '1'
+  const inputType = searchParams.get('type')
+  const type = isSupportedMovieListSlug(inputType) ? String(inputType) : 'phim-moi-cap-nhat'
+  const page = Number(searchParams.get('page') || '1')
+  const year = Number(searchParams.get('year') || '')
 
   try {
-    const res = await fetch(`${BASE_URL}/v1/api/danh-sach/${type}?page=${page}`, {
-      next: { revalidate: 300 },
+    const data = await queryMovies({
+      type,
+      page,
+      year: Number.isFinite(year) ? year : undefined,
     })
-
-    if (!res.ok) {
-      return NextResponse.json({ error: 'Failed to fetch movies' }, { status: res.status })
-    }
-
-    const data = await res.json()
     return NextResponse.json(data)
   } catch (error) {
     console.error('API route error:', error)

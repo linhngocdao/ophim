@@ -1,18 +1,9 @@
 import { NextResponse } from 'next/server'
-
-const BASE_URL = 'https://ophim1.com'
+import { getAllCategories } from '@/lib/server/movie-db'
 
 export async function GET() {
   try {
-    const res = await fetch(`${BASE_URL}/the-loai`, {
-      next: { revalidate: 3600 },
-    })
-
-    if (!res.ok) {
-      return NextResponse.json({ error: 'Failed to fetch categories' }, { status: res.status })
-    }
-
-    const data = await res.json()
+    const data = await getAllCategories()
     return NextResponse.json(data)
   } catch (error) {
     console.error('Categories API error:', error)

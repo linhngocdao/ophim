@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Copy, Check, ChevronDown, ChevronRight, Zap, BookOpen, Globe } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { MOVIE_LIST_SLUGS } from '@/lib/movie-list-types'
 
 const BASE_URL = typeof window !== 'undefined' ? window.location.origin : ''
 
@@ -38,7 +39,7 @@ const ENDPOINTS: Endpoint[] = [
         type: 'string',
         required: false,
         description: 'Loại danh sách phim',
-        options: ['phim-moi-cap-nhat', 'phim-le', 'phim-bo', 'hoat-hinh', 'tv-shows'],
+        options: MOVIE_LIST_SLUGS,
       },
       { name: 'page', type: 'number', required: false, description: 'Số trang (mặc định: 1)' },
     ],

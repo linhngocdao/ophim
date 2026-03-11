@@ -62,7 +62,6 @@ export function HeroBanner({ movies, loading }: HeroBannerProps) {
 
   if (!current) return null
 
-  const posterUrl = getImageUrl(current.poster_url || current.thumb_url)
   const episode = formatEpisode(current.episode_current, current.episode_total)
 
   return (

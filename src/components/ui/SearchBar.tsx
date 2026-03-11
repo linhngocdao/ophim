@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useMovieStore } from '@/store/useMovieStore'
+import { Input } from '@/components/ui/input'
 
 interface SearchBarProps {
   className?: string
@@ -74,14 +75,14 @@ export function SearchBar({ className, placeholder = 'Tìm kiếm phim...', onCl
   return (
     <form onSubmit={handleSubmit} className={cn('relative flex items-center', className)}>
       <Search className="absolute left-3 text-muted-foreground w-4 h-4 pointer-events-none" />
-      <input
+      <Input
         ref={inputRef}
         type="text"
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="w-full bg-white/10 border border-white/20 rounded-full pl-10 pr-10 py-2 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-[#f31260] focus:ring-1 focus:ring-[#f31260] transition-colors"
+        className="h-12 rounded-full border-white/20 bg-white/10 pl-10 pr-10 text-sm text-white placeholder:text-white/50 focus-visible:border-[#f31260] focus-visible:ring-[#f31260]/30"
       />
       {inputValue && (
         <button

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Maximize2, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface VideoPlayerProps {
@@ -12,7 +12,6 @@ interface VideoPlayerProps {
 
 export function VideoPlayer({ embedUrl, title, className }: VideoPlayerProps) {
   const [key, setKey] = useState(0)
-  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const handleReload = () => {
     setKey((prev) => prev + 1)
@@ -24,9 +23,7 @@ export function VideoPlayer({ embedUrl, title, className }: VideoPlayerProps) {
       <div
         className={cn(
           'relative bg-black rounded-lg overflow-hidden',
-          isFullscreen
-            ? 'fixed inset-0 z-50 rounded-none'
-            : 'aspect-video w-full'
+          'aspect-video w-full'
         )}
       >
         <iframe
@@ -50,14 +47,6 @@ export function VideoPlayer({ embedUrl, title, className }: VideoPlayerProps) {
           </button>
         </div>
       </div>
-
-      {/* Fullscreen backdrop */}
-      {isFullscreen && (
-        <div
-          className="fixed inset-0 bg-black z-40"
-          onClick={() => setIsFullscreen(false)}
-        />
-      )}
     </div>
   )
 }

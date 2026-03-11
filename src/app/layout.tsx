@@ -1,18 +1,10 @@
 import type { Metadata } from 'next'
-import { Signika } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/providers/Providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { MobileNav } from '@/components/layout/MobileNav'
 import { WelcomeModal } from '@/components/ui/WelcomeModal'
-
-const signika = Signika({
-  subsets: ['latin', 'vietnamese'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-signika',
-  display: 'swap',
-})
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ophim.vercel.app'
 
@@ -85,7 +77,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://ophim1.com" />
       </head>
       <body
-        className={`${signika.variable} antialiased bg-background text-foreground min-h-screen`}
+        className="antialiased bg-background text-foreground min-h-screen"
         suppressHydrationWarning
       >
         <Providers>

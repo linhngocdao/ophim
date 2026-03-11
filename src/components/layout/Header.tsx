@@ -2,43 +2,50 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Menu, X, ChevronDown, Film, Search, BookOpen, Heart } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Menu, X, ChevronDown, Film, Search, BookOpen, Heart, History, Sparkles, LogOut } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useMovieStore } from '@/store/useMovieStore'
 import { useCategories, useCountries } from '@/hooks/useMovies'
+import { useAuthUser } from '@/hooks/useAuth'
 import { SearchBar } from '@/components/ui/SearchBar'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { MOVIE_LIST_TYPES } from '@/lib/movie-list-types'
 
-const MOVIE_TYPES = [
-  { label: 'Phim Mới Cập Nhật', href: '/danh-sach/phim-moi-cap-nhat' },
-  { label: 'Phim Lẻ', href: '/danh-sach/phim-le' },
-  { label: 'Phim Bộ', href: '/danh-sach/phim-bo' },
-  { label: 'Hoạt Hình', href: '/danh-sach/hoat-hinh' },
-  { label: 'TV Shows', href: '/danh-sach/tv-shows' },
-]
+const MOVIE_TYPES = MOVIE_LIST_TYPES.map((item) => ({
+  label: item.label,
+  href: `/danh-sach/${item.slug}`,
+}))
 
 export function Header() {
   const pathname = usePathname()
+  const router = useRouter()
+  const queryClient = useQueryClient()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
+  const [isDesktopSearchOpen, setIsDesktopSearchOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
   const { data: categories } = useCategories()
   const { data: countries } = useCountries()
   const { favorites } = useMovieStore()
+  const { data: authUser } = useAuthUser()
+
+  const logout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    queryClient.setQueryData(['auth', 'me'], null)
+    router.refresh()
+    router.push('/')
+  }
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
-  useEffect(() => {
-    setIsMenuOpen(false)
-    setOpenDropdown(null)
-  }, [pathname])
 
   const toggleDropdown = (name: string) => {
     setOpenDropdown((prev) => (prev === name ? null : name))
@@ -49,7 +56,7 @@ export function Header() {
       <header
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-          isScrolled || isMenuOpen
+          isScrolled || isMenuOpen || isMobileSearchOpen
             ? 'bg-background/95 backdrop-blur-md shadow-md border-b border-border'
             : 'bg-gradient-to-b from-black/70 to-transparent'
         )}
@@ -203,33 +210,91 @@ export function Header() {
                   </span>
                 )}
               </Link>
+
+              <Link
+                href="/lich-su"
+                className={cn(
+                  'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
+                  pathname === '/lich-su' ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <History className="w-3.5 h-3.5" />
+                Lịch Sử
+              </Link>
+
+              <Link
+                href="/de-xuat"
+                className={cn(
+                  'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
+                  pathname === '/de-xuat' ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Đề Xuất
+              </Link>
+
+              {authUser?.role === 'admin' && (
+                <Link
+                  href="/quan-tri"
+                  className={cn(
+                    'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
+                    pathname.startsWith('/quan-tri') ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  Quản Trị
+                </Link>
+              )}
+
+              {authUser ? (
+                <>
+                  <span className="px-3 py-2 text-sm font-medium text-zinc-300">
+                    Xin chào{authUser.name ? `, ${authUser.name}` : ''}
+                  </span>
+                  <button
+                    onClick={() => void logout()}
+                    className="flex items-center gap-1 px-3 py-2 rounded text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Đăng Xuất
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/dang-nhap"
+                    className={cn(
+                      'px-3 py-2 rounded text-sm font-medium transition-colors',
+                      pathname.startsWith('/dang-nhap') ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    Đăng Nhập
+                  </Link>
+                  <Link
+                    href="/dang-ky"
+                    className={cn(
+                      'rounded-full border border-[#f31260]/50 bg-[#f31260]/15 px-3 py-1.5 text-sm font-medium transition-colors',
+                      pathname.startsWith('/dang-ky') ? 'text-[#ff8db9]' : 'text-[#ff97bf] hover:bg-[#f31260]/25'
+                    )}
+                  >
+                    Đăng Ký
+                  </Link>
+                </>
+              )}
             </nav>
 
             {/* Right side */}
             <div className="flex items-center gap-1">
               {/* Desktop search */}
-              {isSearchOpen ? (
-                <div className="hidden md:flex items-center gap-2">
-                  <SearchBar className="w-64" autoFocus onClose={() => setIsSearchOpen(false)} />
-                  <button
-                    onClick={() => setIsSearchOpen(false)}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setIsSearchOpen(true)}
-                  className="hidden md:flex items-center justify-center w-9 h-9 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Search className="w-5 h-5" />
-                </button>
-              )}
+              <button
+                onClick={() => setIsDesktopSearchOpen(true)}
+                className="hidden md:flex items-center justify-center w-9 h-9 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Search className="w-5 h-5" />
+              </button>
 
               {/* Mobile search button */}
               <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
                 className="md:hidden flex items-center justify-center w-9 h-9 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Search className="w-5 h-5" />
@@ -249,9 +314,9 @@ export function Header() {
           </div>
 
           {/* Mobile search bar */}
-          {isSearchOpen && (
+          {isMobileSearchOpen && (
             <div className="md:hidden pb-3">
-              <SearchBar className="w-full" autoFocus onClose={() => setIsSearchOpen(false)} />
+              <SearchBar className="w-full" autoFocus onClose={() => setIsMobileSearchOpen(false)} />
             </div>
           )}
         </div>
@@ -287,6 +352,67 @@ export function Header() {
                 <BookOpen className="w-4 h-4" />
                 API Documentation
               </Link>
+
+              <Link
+                href="/lich-su"
+                className="flex items-center gap-2 px-3 py-2 rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              >
+                <History className="w-4 h-4" />
+                Lịch Sử Xem
+              </Link>
+
+              <Link
+                href="/de-xuat"
+                className="flex items-center gap-2 px-3 py-2 rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              >
+                <Sparkles className="w-4 h-4" />
+                Đề Xuất Cá Nhân
+              </Link>
+
+              {authUser?.role === 'admin' && (
+                <Link
+                  href="/quan-tri"
+                  className="flex items-center gap-2 px-3 py-2 rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                >
+                  Quản Trị
+                </Link>
+              )}
+
+              {authUser ? (
+                <div className="space-y-2 px-1 py-1">
+                  <p className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-200">
+                    Xin chào{authUser.name ? `, ${authUser.name}` : ''}
+                  </p>
+                  <button
+                    onClick={() => void logout()}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded text-sm font-medium text-red-300 hover:text-red-200 hover:bg-red-500/10 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Đăng Xuất
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2 px-1 py-1">
+                  <Link
+                    href="/dang-nhap"
+                    className="block rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-white/10"
+                  >
+                    Đăng Nhập
+                  </Link>
+                  <Link
+                    href="/dang-ky"
+                    className="block rounded-lg bg-[#f31260] px-3 py-2 text-sm font-semibold text-white"
+                  >
+                    Đăng Ký
+                  </Link>
+                  <Link
+                    href="/quen-mat-khau"
+                    className="block rounded-lg border border-white/10 px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/5"
+                  >
+                    Quên Mật Khẩu
+                  </Link>
+                </div>
+              )}
 
               <div>
                 <button
@@ -360,6 +486,18 @@ export function Header() {
           </div>
         )}
       </header>
+
+      <Dialog open={isDesktopSearchOpen} onOpenChange={setIsDesktopSearchOpen}>
+        <DialogContent className="hidden md:grid w-full max-w-2xl border-white/10 bg-[#101018] p-5">
+          <DialogTitle className="text-base font-semibold text-white">Tìm kiếm phim</DialogTitle>
+          <SearchBar
+            className="w-full"
+            autoFocus
+            placeholder="Nhập tên phim..."
+            onClose={() => setIsDesktopSearchOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

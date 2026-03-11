@@ -44,6 +44,23 @@ export const searchMovies = async (keyword: string, page = 1): Promise<MovieList
   return data
 }
 
+export const searchMoviesWithFilters = async (params: {
+  keyword?: string
+  page?: number
+  year?: number
+  country?: string
+}): Promise<MovieListResponse> => {
+  const { data } = await apiClient.get('/api/search', {
+    params: {
+      keyword: params.keyword,
+      page: params.page || 1,
+      year: params.year,
+      country: params.country,
+    },
+  })
+  return data
+}
+
 // Categories
 export const getCategories = async (): Promise<Category[]> => {
   const { data } = await apiClient.get('/api/categories')
@@ -60,6 +77,11 @@ export const getMoviesByCategory = async (slug: string, page = 1): Promise<Movie
 // Countries
 export const getCountries = async (): Promise<Country[]> => {
   const { data } = await apiClient.get('/api/countries')
+  return data
+}
+
+export const getYears = async (): Promise<number[]> => {
+  const { data } = await apiClient.get('/api/years')
   return data
 }
 

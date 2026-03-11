@@ -1,13 +1,11 @@
 import Link from 'next/link'
 import { Film, Facebook, Youtube, Github } from 'lucide-react'
+import { MOVIE_LIST_TYPES } from '@/lib/movie-list-types'
 
-const MOVIE_TYPES = [
-  { label: 'Phim Mới Cập Nhật', href: '/danh-sach/phim-moi-cap-nhat' },
-  { label: 'Phim Lẻ', href: '/danh-sach/phim-le' },
-  { label: 'Phim Bộ', href: '/danh-sach/phim-bo' },
-  { label: 'Hoạt Hình', href: '/danh-sach/hoat-hinh' },
-  { label: 'TV Shows', href: '/danh-sach/tv-shows' },
-]
+const MOVIE_TYPES = MOVIE_LIST_TYPES.map((item) => ({
+  label: item.label,
+  href: `/danh-sach/${item.slug}`,
+}))
 
 const POPULAR_CATEGORIES = [
   { label: 'Hành Động', href: '/the-loai/hanh-dong' },

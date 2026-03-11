@@ -2,33 +2,22 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, Search, Film, Grid2X2, Heart, X, ChevronRight } from 'lucide-react'
+import { Home, Search, Grid2X2, Heart, X, ChevronRight, History } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useMovieStore } from '@/store/useMovieStore'
-import { useCategories } from '@/hooks/useMovies'
+import { useCategories, useCountries } from '@/hooks/useMovies'
+import { useAuthUser } from '@/hooks/useAuth'
 import { useState } from 'react'
+import { MOVIE_LIST_TYPES } from '@/lib/movie-list-types'
 
-const MOVIE_TYPES = [
-  { label: 'Phim Mới Cập Nhật', href: '/danh-sach/phim-moi-cap-nhat' },
-  { label: 'Phim Lẻ', href: '/danh-sach/phim-le' },
-  { label: 'Phim Bộ', href: '/danh-sach/phim-bo' },
-  { label: 'Hoạt Hình', href: '/danh-sach/hoat-hinh' },
-  { label: 'TV Shows', href: '/danh-sach/tv-shows' },
-]
-
-const POPULAR_COUNTRIES = [
-  { label: 'Hàn Quốc', slug: 'han-quoc' },
-  { label: 'Trung Quốc', slug: 'trung-quoc' },
-  { label: 'Âu Mỹ', slug: 'au-my' },
-  { label: 'Nhật Bản', slug: 'nhat-ban' },
-  { label: 'Thái Lan', slug: 'thai-lan' },
-  { label: 'Hồng Kông', slug: 'hong-kong' },
-  { label: 'Đài Loan', slug: 'dai-loan' },
-  { label: 'Việt Nam', slug: 'viet-nam' },
-]
+const MOVIE_TYPES = MOVIE_LIST_TYPES.map((item) => ({
+  label: item.label,
+  href: `/danh-sach/${item.slug}`,
+}))
 
 function CategorySheet({ onClose }: { onClose: () => void }) {
   const { data: categories } = useCategories()
+  const { data: countries } = useCountries()
   const router = useRouter()
 
   const navigate = (href: string) => {
@@ -64,6 +53,20 @@ function CategorySheet({ onClose }: { onClose: () => void }) {
               Danh Sách
             </p>
             <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => navigate('/de-xuat')}
+                className="flex items-center justify-between bg-[#f31260]/10 hover:bg-[#f31260]/20 border border-[#f31260]/30 rounded-xl px-4 py-3 text-sm font-medium transition-colors text-left"
+              >
+                Đề Xuất Cho Bạn
+                <ChevronRight className="w-3.5 h-3.5 text-[#f31260] flex-shrink-0" />
+              </button>
+              <button
+                onClick={() => navigate('/lich-su')}
+                className="flex items-center justify-between bg-secondary hover:bg-[#f31260]/10 hover:border-[#f31260]/30 border border-border rounded-xl px-4 py-3 text-sm font-medium transition-colors text-left"
+              >
+                Lịch Sử Xem
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+              </button>
               {MOVIE_TYPES.map((item) => (
                 <button
                   key={item.href}
@@ -98,22 +101,24 @@ function CategorySheet({ onClose }: { onClose: () => void }) {
           )}
 
           {/* Quốc gia */}
-          <div className="px-5 pt-6">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              Quốc Gia
-            </p>
-            <div className="grid grid-cols-4 gap-2">
-              {POPULAR_COUNTRIES.map((c) => (
-                <button
-                  key={c.slug}
-                  onClick={() => navigate(`/quoc-gia/${c.slug}`)}
-                  className="bg-secondary hover:bg-[#f31260] hover:text-white border border-border hover:border-[#f31260] rounded-xl py-2.5 px-1 text-xs font-medium transition-colors text-center"
-                >
-                  {c.label}
-                </button>
-              ))}
+          {countries && countries.length > 0 && (
+            <div className="px-5 pt-6">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                Quốc Gia
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {countries.map((country) => (
+                  <button
+                    key={country.id}
+                    onClick={() => navigate(`/quoc-gia/${country.slug}`)}
+                    className="bg-secondary hover:bg-[#f31260] hover:text-white border border-border hover:border-[#f31260] rounded-xl py-2.5 px-1 text-xs font-medium transition-colors text-center"
+                  >
+                    {country.name}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -227,6 +232,7 @@ function FavoritesSheet({ onClose }: { onClose: () => void }) {
 export function MobileNav() {
   const pathname = usePathname()
   const { favorites } = useMovieStore()
+  const { data: authUser } = useAuthUser()
   const [openSheet, setOpenSheet] = useState<'category' | 'favorites' | null>(null)
 
   const navItems = [
@@ -245,11 +251,11 @@ export function MobileNav() {
       href: '/tim-kiem',
     },
     {
-      label: 'Phim Mới',
-      icon: Film,
-      isActive: pathname.startsWith('/danh-sach') || pathname.startsWith('/phim'),
+      label: 'Lịch Sử',
+      icon: History,
+      isActive: pathname.startsWith('/lich-su'),
       onClick: undefined,
-      href: '/danh-sach/phim-moi-cap-nhat',
+      href: '/lich-su',
     },
     {
       label: 'Thể Loại',
@@ -266,6 +272,15 @@ export function MobileNav() {
       href: undefined,
       badge: favorites.length,
     },
+    ...(authUser?.role === 'admin'
+      ? [{
+        label: 'Admin',
+        icon: Grid2X2,
+        isActive: pathname.startsWith('/quan-tri'),
+        onClick: undefined,
+        href: '/quan-tri',
+      }]
+      : []),
   ]
 
   return (
