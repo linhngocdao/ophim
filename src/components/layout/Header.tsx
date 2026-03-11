@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Menu, X, ChevronDown, Film, Search, BookOpen, Heart, History, Sparkles, LogOut } from 'lucide-react'
+import { Menu, X, ChevronDown, Film, Search, BookOpen, Heart, History, Sparkles, LogOut, Compass } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMovieStore } from '@/store/useMovieStore'
 import { useCategories, useCountries } from '@/hooks/useMovies'
@@ -18,6 +18,13 @@ const MOVIE_TYPES = MOVIE_LIST_TYPES.map((item) => ({
   label: item.label,
   href: `/danh-sach/${item.slug}`,
 }))
+
+const EXPLORE_LINKS = [
+  { label: 'Đề Xuất', href: '/de-xuat', icon: Sparkles },
+  { label: 'Yêu Thích', href: '/yeu-thich', icon: Heart },
+  { label: 'Lịch Sử', href: '/lich-su', icon: History },
+  { label: 'API', href: '/api-doc', icon: BookOpen },
+]
 
 export function Header() {
   const pathname = usePathname()
@@ -184,54 +191,51 @@ export function Header() {
                   </div>
                 )}
               </div>
-              <Link
-                href="/api-doc"
-                className={cn(
-                  'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
-                  pathname === '/api-doc' ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
+              <div className="relative">
+                <button
+                  onMouseEnter={() => setOpenDropdown('kham-pha')}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                  className={cn(
+                    'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
+                    pathname === '/api-doc' || pathname === '/yeu-thich' || pathname === '/lich-su' || pathname === '/de-xuat'
+                      ? 'text-[#f31260]'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  <Compass className="w-3.5 h-3.5" />
+                  Khám Phá
+                  <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', openDropdown === 'kham-pha' && 'rotate-180')} />
+                </button>
+                {openDropdown === 'kham-pha' && (
+                  <div
+                    className="absolute top-full left-0 mt-1 w-52 bg-popover border border-border rounded-lg shadow-xl py-1 z-50"
+                    onMouseEnter={() => setOpenDropdown('kham-pha')}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                  >
+                    {EXPLORE_LINKS.map((item) => {
+                      const Icon = item.icon
+                      const isFav = item.href === '/yeu-thich'
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="flex items-center justify-between px-4 py-2 text-sm text-popover-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            <Icon className="h-3.5 w-3.5" />
+                            {item.label}
+                          </span>
+                          {isFav && favorites.length > 0 && (
+                            <span className="min-w-[16px] h-4 bg-[#f31260] text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1">
+                              {favorites.length > 99 ? '99+' : favorites.length}
+                            </span>
+                          )}
+                        </Link>
+                      )
+                    })}
+                  </div>
                 )}
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                API
-              </Link>
-
-              <Link
-                href="/yeu-thich"
-                className={cn(
-                  'relative flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
-                  pathname === '/yeu-thich' ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <Heart className="w-3.5 h-3.5" />
-                Yêu Thích
-                {favorites.length > 0 && (
-                  <span className="absolute -top-0.5 right-0.5 min-w-[16px] h-4 bg-[#f31260] text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">
-                    {favorites.length > 99 ? '99+' : favorites.length}
-                  </span>
-                )}
-              </Link>
-
-              <Link
-                href="/lich-su"
-                className={cn(
-                  'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
-                  pathname === '/lich-su' ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <History className="w-3.5 h-3.5" />
-                Lịch Sử
-              </Link>
-
-              <Link
-                href="/de-xuat"
-                className={cn(
-                  'flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-colors',
-                  pathname === '/de-xuat' ? 'text-[#f31260]' : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                Đề Xuất
-              </Link>
+              </div>
 
               {authUser?.role === 'admin' && (
                 <Link
